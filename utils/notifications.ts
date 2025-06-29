@@ -1,3 +1,4 @@
+import i18n from "./i18n";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import { Medication } from "./storage";
@@ -68,8 +69,11 @@ export async function scheduleMedicationReminder(
 
       const identifier = await Notifications.scheduleNotificationAsync({
         content: {
-          title: "Medication Reminder",
-          body: `Time to take ${medication.name} (${medication.dosage})`,
+          title: i18n.t("notifications.medicationTitle"),
+          body: i18n.t("notifications.medicationBody", {
+            name: medication.name,
+            dosage: medication.dosage,
+          }),
           data: { medicationId: medication.id },
         },
         trigger: {
@@ -98,8 +102,11 @@ export async function scheduleRefillReminder(
     if (medication.currentSupply <= medication.refillAt) {
       const identifier = await Notifications.scheduleNotificationAsync({
         content: {
-          title: "Refill Reminder",
-          body: `Your ${medication.name} supply is running low. Current supply: ${medication.currentSupply}`,
+          title: i18n.t("notifications.refillTitle"),
+          body: i18n.t("notifications.refillBody", {
+            name: medication.name,
+            current: medication.currentSupply,
+          }),
           data: { medicationId: medication.id, type: "refill" },
         },
         trigger: null, // Show immediately

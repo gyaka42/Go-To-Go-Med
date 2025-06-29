@@ -11,8 +11,10 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSFaceIDUsageDescription": "Deze app gebruikt Face ID om toegang te beveiligen tot je medicatiegegevens."
-      }
+        "NSFaceIDUsageDescription": "Deze app gebruikt Face ID om toegang te beveiligen tot je medicatiegegevens.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.gogo22.gotogomed"
     },
     "android": {
       "adaptiveIcon": {
