@@ -29,6 +29,7 @@ i18n.translations = {
     refillTracker: "Refill Tracker",
     taken: "Taken",
     take: "Take",
+    notifications: "Notifications",
     close: "Close",
     calendar: "Calendar",
     noMedicationsToday: "No medications scheduled for today",
@@ -95,14 +96,6 @@ i18n.translations = {
     clearAllDataSuccess: "All data has been cleared successfully",
     clearAllDataError: "Failed to clear data. Please try again.",
     missed: "Missed",
-    notifications: {
-      label: "Notifications",
-      medicationTitle: "Medication Reminder",
-      medicationBody: "Time to take {{name}} ({{dosage}})",
-      refillTitle: "Refill Reminder",
-      refillBody:
-        "Your {{name}} supply is running low. Current supply: {{current}}",
-    },
   },
   nl: {
     appName: "Go-To-Go Med!",
@@ -123,6 +116,7 @@ i18n.translations = {
     refillTracker: "Navul Tracker",
     taken: "Ingenomen",
     take: "Neem in",
+    notifications: "Meldingen",
     close: "Sluiten",
     calendar: "Kalender",
     noMedicationsToday: "Geen medicatie gepland voor vandaag",
@@ -192,14 +186,6 @@ i18n.translations = {
     clearAllDataSuccess: "Alle gegevens zijn succesvol gewist",
     clearAllDataError: "Gegevens wissen mislukt. Probeer het opnieuw.",
     missed: "Gemist",
-    notifications: {
-      label: "Meldingen",
-      medicationTitle: "Medicatie Herinnering",
-      medicationBody: "Tijd om {{name}} ({{dosage}}) in te nemen",
-      refillTitle: "Navul Herinnering",
-      refillBody:
-        "Je voorraad van {{name}} raakt op. Huidige voorraad: {{current}}",
-    },
   },
   tr: {
     appName: "Go-To-Go Med!",
@@ -221,6 +207,7 @@ i18n.translations = {
     refillTracker: "Yenileme Takibi",
     taken: "Alındı",
     take: "Al",
+    notifications: "Bildirimler",
     close: "Kapat",
     calendar: "Takvim",
     noMedicationsToday: "Bugün için ilaç yok",
@@ -287,13 +274,6 @@ i18n.translations = {
     clearAllDataSuccess: "Tüm veriler başarıyla silindi",
     clearAllDataError: "Veriler silinemedi. Lütfen tekrar deneyin.",
     missed: "Kaçırıldı",
-    notifications: {
-      label: "Bildirimler",
-      medicationTitle: "İlaç Hatırlatıcı",
-      medicationBody: "{{name}} ({{dosage}}) alma zamanı",
-      refillTitle: "Yenileme Hatırlatıcı",
-      refillBody: "{{name}} stoğunuz azaldı. Mevcut stok: {{current}}",
-    },
   },
   de: {
     appName: "Go-To-Go Med!",
@@ -314,6 +294,7 @@ i18n.translations = {
     refillTracker: "Nachfüllanzeige",
     taken: "Eingenommen",
     take: "Einnehmen",
+    notifications: "Benachrichtigungen",
     close: "Schließen",
     calendar: "Kalender",
     noMedicationsToday: "Keine Medikamente für heute geplant",
@@ -381,14 +362,6 @@ i18n.translations = {
     clearAllDataSuccess: "All data has been cleared successfully",
     clearAllDataError: "Failed to clear data. Please try again.",
     missed: "Missed",
-    notifications: {
-      label: "Benachrichtigungen",
-      medicationTitle: "Medikamentenerinnerung",
-      medicationBody: "Zeit, {{name}} ({{dosage}}) einzunehmen",
-      refillTitle: "Nachfüll-Erinnerung",
-      refillBody:
-        "Dein Vorrat an {{name}} wird knapp. Aktueller Vorrat: {{current}}",
-    },
   },
   es: {
     appName: "Go-To-Go Med!",
@@ -409,6 +382,7 @@ i18n.translations = {
     refillTracker: "Seguimiento de Recargas",
     taken: "Tomado",
     take: "Tomar",
+    notifications: "Notificaciones",
     close: "Cerrar",
     calendar: "Calendario",
     noMedicationsToday: "No hay medicamentos programados para hoy",
@@ -476,14 +450,6 @@ i18n.translations = {
     clearAllDataSuccess: "All data has been cleared successfully",
     clearAllDataError: "Failed to clear data. Please try again.",
     missed: "Missed",
-    notifications: {
-      label: "Notificaciones",
-      medicationTitle: "Recordatorio de Medicamento",
-      medicationBody: "Es hora de tomar {{name}} ({{dosage}})",
-      refillTitle: "Recordatorio de Recarga",
-      refillBody:
-        "Tu suministro de {{name}} se está agotando. Suministro actual: {{current}}",
-    },
   },
   fr: {
     appName: "Go-To-Go Med!",
@@ -505,6 +471,7 @@ i18n.translations = {
     refillTracker: "Suivi des Recharges",
     taken: "Pris",
     take: "Prendre",
+    notifications: "Notifications",
     close: "Fermer",
     calendar: "Calendrier",
     noMedicationsToday: "Aucun médicament prévu pour aujourd'hui",
@@ -572,14 +539,6 @@ i18n.translations = {
     clearAllDataSuccess: "All data has been cleared successfully",
     clearAllDataError: "Failed to clear data. Please try again.",
     missed: "Missed",
-    notifications: {
-      label: "Notifications",
-      medicationTitle: "Rappel de Médicament",
-      medicationBody: "Il est temps de prendre {{name}} ({{dosage}})",
-      refillTitle: "Rappel de Recharge",
-      refillBody:
-        "Votre stock de {{name}} est faible. Stock actuel: {{current}}",
-    },
   },
   it: {
     appName: "Go-To-Go Med!",
@@ -600,6 +559,7 @@ i18n.translations = {
     refillTracker: "Monitoraggio Ricariche",
     taken: "Preso",
     take: "Prendi",
+    notifications: "Notifiche",
     close: "Chiudi",
     calendar: "Calendario",
     noMedicationsToday: "Nessun farmaco programmato per oggi",
@@ -667,14 +627,6 @@ i18n.translations = {
     clearAllDataSuccess: "All data has been cleared successfully",
     clearAllDataError: "Failed to clear data. Please try again.",
     missed: "Missed",
-    notifications: {
-      label: "Notifiche",
-      medicationTitle: "Promemoria Farmaco",
-      medicationBody: "È ora di prendere {{name}} ({{dosage}})",
-      refillTitle: "Promemoria Ricarica",
-      refillBody:
-        "La scorta di {{name}} sta per finire. Scorta attuale: {{current}}",
-    },
   },
 };
 

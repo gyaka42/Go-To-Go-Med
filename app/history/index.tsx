@@ -186,7 +186,7 @@ export default function HistoryScreen() {
           {groupedHistory.map(([date, doses]) => (
             <View key={date} style={styles.dateGroup}>
               <Text style={styles.dateHeader}>
-                {new Date(date).toLocaleDateString(i18n.locale, {
+                {new Date(date).toLocaleDateString("default", {
                   weekday: "long",
                   month: "long",
                   day: "numeric",
