@@ -186,7 +186,7 @@ export default function HistoryScreen() {
           {groupedHistory.map(([date, doses]) => (
             <View key={date} style={styles.dateGroup}>
               <Text style={styles.dateHeader}>
-                {new Date(date).toLocaleDateString("default", {
+                {new Date(date).toLocaleDateString(i18n.locale, {
                   weekday: "long",
                   month: "long",
                   day: "numeric",
@@ -208,10 +208,13 @@ export default function HistoryScreen() {
                       {dose.medication?.dosage}
                     </Text>
                     <Text style={styles.timeText}>
-                      {new Date(dose.timestamp).toLocaleTimeString("default", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {new Date(dose.timestamp).toLocaleTimeString(
+                        i18n.locale,
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }
+                      )}
                     </Text>
                   </View>
                   <View style={styles.statusContainer}>

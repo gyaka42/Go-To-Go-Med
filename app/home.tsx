@@ -391,7 +391,9 @@ export default function HomeScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{i18n.t("notifications")}</Text>
+              <Text style={styles.modalTitle}>
+                {i18n.t("notifications.label")}
+              </Text>
               <TouchableOpacity
                 onPress={() => setShowNotifications(false)}
                 style={styles.closeButton}

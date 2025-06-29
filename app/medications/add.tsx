@@ -419,7 +419,7 @@ export default function AddMedicationScreen() {
                 onChange={(event, date) => {
                   setShowTimePicker(false);
                   if (date) {
-                    const newTime = date.toLocaleTimeString("default", {
+                    const newTime = date.toLocaleTimeString(i18n.locale, {
                       hour: "2-digit",
                       minute: "2-digit",
                       hour12: false,
