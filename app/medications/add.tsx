@@ -22,43 +22,49 @@ import {
   scheduleMedicationReminder,
   scheduleRefillReminder,
 } from "../../utils/notifications";
+import i18n from "../../utils/i18n";
 
 const { width } = Dimensions.get("window");
 
 const FREQUENCIES = [
   {
     id: "1",
-    label: "Once daily",
+    label: i18n.t("onceDaily"),
     icon: "sunny-outline" as const,
     times: ["09:00"],
   },
   {
     id: "2",
-    label: "Twice daily",
+    label: i18n.t("twiceDaily"),
     icon: "sync-outline" as const,
     times: ["09:00", "21:00"],
   },
   {
     id: "3",
-    label: "Three times daily",
+    label: i18n.t("threeTimesDaily"),
     icon: "time-outline" as const,
     times: ["09:00", "15:00", "21:00"],
   },
   {
     id: "4",
-    label: "Four times daily",
+    label: i18n.t("fourTimesDaily"),
     icon: "repeat-outline" as const,
     times: ["09:00", "13:00", "17:00", "21:00"],
   },
-  { id: "5", label: "As needed", icon: "calendar-outline" as const, times: [] },
+  {
+    id: "5",
+    label: i18n.t("asNeeded"),
+    icon: "calendar-outline" as const,
+    times: [],
+  },
 ];
 
 const DURATIONS = [
-  { id: "1", label: "7 days", value: 7 },
-  { id: "2", label: "14 days", value: 14 },
-  { id: "3", label: "30 days", value: 30 },
-  { id: "4", label: "90 days", value: 90 },
-  { id: "5", label: "Ongoing", value: -1 },
+  { id: "1", label: i18n.t("duration7Days"), value: 7 },
+  { id: "2", label: i18n.t("duration14Days"), value: 14 },
+  { id: "3", label: i18n.t("duration30Days"), value: 30 },
+  { id: "4", label: i18n.t("duration90Days"), value: 90 },
+  { id: "5", label: i18n.t("durationOngoing"), value: -1 },
 ];
 
 export default function AddMedicationScreen() {
@@ -88,31 +94,30 @@ export default function AddMedicationScreen() {
     const newErrors: { [key: string]: string } = {};
 
     if (!form.name.trim()) {
-      newErrors.name = "Medication name is required";
+      newErrors.name = i18n.t("medicationNameRequired");
     }
 
     if (!form.dosage.trim()) {
-      newErrors.dosage = "Dosage is required";
+      newErrors.dosage = i18n.t("dosageRequired");
     }
 
     if (!form.frequency) {
-      newErrors.frequency = "Frequency is required";
+      newErrors.frequency = i18n.t("frequencyRequired");
     }
 
     if (!form.duration) {
-      newErrors.duration = "Duration is required";
+      newErrors.duration = i18n.t("durationRequired");
     }
 
     if (form.refillReminder) {
       if (!form.currentSupply) {
-        newErrors.currentSupply =
-          "Current supply is required for refill tracking";
+        newErrors.currentSupply = i18n.t("currentSupplyRequired");
       }
       if (!form.refillAt) {
-        newErrors.refillAt = "Refill alert threshold is required";
+        newErrors.refillAt = i18n.t("refillAlertRequired");
       }
       if (Number(form.refillAt) >= Number(form.currentSupply)) {
-        newErrors.refillAt = "Refill alert must be less than current supply";
+        newErrors.refillAt = i18n.t("refillAlertLessThanSupply");
       }
     }
 
@@ -123,7 +128,7 @@ export default function AddMedicationScreen() {
   const handleSave = async () => {
     try {
       if (!validateForm()) {
-        Alert.alert("Error", "Please fill in all required fields correctly");
+        Alert.alert(i18n.t("error"), i18n.t("fillAllRequiredFields"));
         return;
       }
 
@@ -155,11 +160,11 @@ export default function AddMedicationScreen() {
       }
 
       Alert.alert(
-        "Success",
-        "Medication added successfully",
+        i18n.t("success"),
+        i18n.t("medicationAddedSuccessfully"),
         [
           {
-            text: "OK",
+            text: i18n.t("ok"),
             onPress: () => router.back(),
           },
         ],
@@ -168,9 +173,9 @@ export default function AddMedicationScreen() {
     } catch (error) {
       console.error("Save error:", error);
       Alert.alert(
-        "Error",
-        "Failed to save medication. Please try again.",
-        [{ text: "OK" }],
+        i18n.t("error"),
+        i18n.t("failedToSaveMedication"),
+        [{ text: i18n.t("ok") }],
         { cancelable: false }
       );
     } finally {
@@ -280,7 +285,7 @@ export default function AddMedicationScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["#1a8e2d", "#146922"]}
+        colors={["#168A7D", "#76E3D4"]}
         style={styles.headerGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -292,9 +297,9 @@ export default function AddMedicationScreen() {
             onPress={() => router.back()}
             style={styles.backButton}
           >
-            <Ionicons name="chevron-back" size={28} color="#1a8e2d" />
+            <Ionicons name="chevron-back" size={28} color="#168A7D" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>New Medication</Text>
+          <Text style={styles.headerTitle}>{i18n.t("newMedication")}</Text>
         </View>
 
         <ScrollView
@@ -307,7 +312,7 @@ export default function AddMedicationScreen() {
             <View style={styles.inputContainer}>
               <TextInput
                 style={[styles.mainInput, errors.name && styles.inputError]}
-                placeholder="Medication Name"
+                placeholder={i18n.t("medicationName")}
                 placeholderTextColor="#999"
                 value={form.name}
                 onChangeText={(text) => {
@@ -324,7 +329,7 @@ export default function AddMedicationScreen() {
             <View style={styles.inputContainer}>
               <TextInput
                 style={[styles.mainInput, errors.dosage && styles.inputError]}
-                placeholder="Dosage (e.g., 500mg)"
+                placeholder={i18n.t("dosagePlaceholder")}
                 placeholderTextColor="#999"
                 value={form.dosage}
                 onChangeText={(text) => {
@@ -342,13 +347,13 @@ export default function AddMedicationScreen() {
 
           {/* Schedule */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>How often?</Text>
+            <Text style={styles.sectionTitle}>{i18n.t("howOften")}</Text>
             {errors.frequency && (
               <Text style={styles.errorText}>{errors.frequency}</Text>
             )}
             {renderFrequencyOptions()}
 
-            <Text style={styles.sectionTitle}>For how long?</Text>
+            <Text style={styles.sectionTitle}>{i18n.t("forHowLong")}</Text>
             {errors.duration && (
               <Text style={styles.errorText}>{errors.duration}</Text>
             )}
@@ -359,10 +364,10 @@ export default function AddMedicationScreen() {
               onPress={() => setShowDatePicker(true)}
             >
               <View style={styles.dateIconContainer}>
-                <Ionicons name="calendar" size={20} color="#1a8e2d" />
+                <Ionicons name="calendar" size={20} color="#168A7D" />
               </View>
               <Text style={styles.dateButtonText}>
-                Starts {form.startDate.toLocaleDateString()}
+                {i18n.t("starts")} {form.startDate.toLocaleDateString()}
               </Text>
               <Ionicons name="chevron-forward" size={20} color="#666" />
             </TouchableOpacity>
@@ -375,12 +380,15 @@ export default function AddMedicationScreen() {
                   setShowDatePicker(false);
                   if (date) setForm({ ...form, startDate: date });
                 }}
+                locale={i18n.locale}
               />
             )}
 
             {form.frequency && form.frequency !== "As needed" && (
               <View style={styles.timesContainer}>
-                <Text style={styles.timesTitle}>Medication Times</Text>
+                <Text style={styles.timesTitle}>
+                  {i18n.t("medicationTimes")}
+                </Text>
                 {form.times.map((time, index) => (
                   <TouchableOpacity
                     key={index}
@@ -390,7 +398,7 @@ export default function AddMedicationScreen() {
                     }}
                   >
                     <View style={styles.timeIconContainer}>
-                      <Ionicons name="time-outline" size={20} color="#1a8e2d" />
+                      <Ionicons name="time-outline" size={20} color="#168A7D" />
                     </View>
                     <Text style={styles.timeButtonText}>{time}</Text>
                     <Ionicons name="chevron-forward" size={20} color="#666" />
@@ -422,6 +430,7 @@ export default function AddMedicationScreen() {
                     }));
                   }
                 }}
+                locale={i18n.locale}
               />
             )}
           </View>
@@ -432,12 +441,14 @@ export default function AddMedicationScreen() {
               <View style={styles.switchRow}>
                 <View style={styles.switchLabelContainer}>
                   <View style={styles.iconContainer}>
-                    <Ionicons name="notifications" size={20} color="#1a8e2d" />
+                    <Ionicons name="notifications" size={20} color="#168A7D" />
                   </View>
-                  <View>
-                    <Text style={styles.switchLabel}>Reminders</Text>
+                  <View style={styles.switchTextContainer}>
+                    <Text style={styles.switchLabel}>
+                      {i18n.t("reminders")}
+                    </Text>
                     <Text style={styles.switchSubLabel}>
-                      Get notified when it is time to take your medication
+                      {i18n.t("remindersDescription")}
                     </Text>
                   </View>
                 </View>
@@ -446,7 +457,7 @@ export default function AddMedicationScreen() {
                   onValueChange={(value) =>
                     setForm({ ...form, reminderEnabled: value })
                   }
-                  trackColor={{ false: "#ddd", true: "#1a8e2d" }}
+                  trackColor={{ false: "#ddd", true: "#168A7D" }}
                   thumbColor="white"
                 />
               </View>
@@ -459,12 +470,14 @@ export default function AddMedicationScreen() {
               <View style={styles.switchRow}>
                 <View style={styles.switchLabelContainer}>
                   <View style={styles.iconContainer}>
-                    <Ionicons name="reload" size={20} color="#1a8e2d" />
+                    <Ionicons name="reload" size={20} color="#168A7D" />
                   </View>
-                  <View>
-                    <Text style={styles.switchLabel}>Refill Tracking</Text>
+                  <View style={styles.switchTextContainer}>
+                    <Text style={styles.switchLabel}>
+                      {i18n.t("refillTracking")}
+                    </Text>
                     <Text style={styles.switchSubLabel}>
-                      Get notified when you need to refill
+                      {i18n.t("refillTrackingDescription")}
                     </Text>
                   </View>
                 </View>
@@ -480,7 +493,7 @@ export default function AddMedicationScreen() {
                       });
                     }
                   }}
-                  trackColor={{ false: "#ddd", true: "#1a8e2d" }}
+                  trackColor={{ false: "#ddd", true: "#168A7D" }}
                   thumbColor="white"
                 />
               </View>
@@ -493,7 +506,7 @@ export default function AddMedicationScreen() {
                           styles.input,
                           errors.currentSupply && styles.inputError,
                         ]}
-                        placeholder="Current Supply"
+                        placeholder={i18n.t("currentSupply")}
                         placeholderTextColor="#999"
                         value={form.currentSupply}
                         onChangeText={(text) => {
@@ -516,7 +529,7 @@ export default function AddMedicationScreen() {
                           styles.input,
                           errors.refillAt && styles.inputError,
                         ]}
-                        placeholder="Alert at"
+                        placeholder={i18n.t("alertAt")}
                         placeholderTextColor="#999"
                         value={form.refillAt}
                         onChangeText={(text) => {
@@ -542,7 +555,7 @@ export default function AddMedicationScreen() {
             <View style={styles.textAreaContainer}>
               <TextInput
                 style={styles.textArea}
-                placeholder="Add notes or special instructions..."
+                placeholder={i18n.t("notesPlaceholder")}
                 placeholderTextColor="#999"
                 value={form.notes}
                 onChangeText={(text) => setForm({ ...form, notes: text })}
@@ -564,13 +577,13 @@ export default function AddMedicationScreen() {
             disabled={isSubmitting}
           >
             <LinearGradient
-              colors={["#1a8e2d", "#146922"]}
+              colors={["#168A7D", "#76E3D4"]}
               style={styles.saveButtonGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
             >
               <Text style={styles.saveButtonText}>
-                {isSubmitting ? "Adding..." : "Add Medication"}
+                {isSubmitting ? i18n.t("adding") : i18n.t("addMedication")}
               </Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -579,7 +592,7 @@ export default function AddMedicationScreen() {
             onPress={() => router.back()}
             disabled={isSubmitting}
           >
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+            <Text style={styles.cancelButtonText}>{i18n.t("cancel")}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -671,8 +684,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   selectedOptionCard: {
-    backgroundColor: "#1a8e2d",
-    borderColor: "#1a8e2d",
+    backgroundColor: "#168A7D",
+    borderColor: "#76E3D4",
   },
   optionIcon: {
     width: 50,
@@ -698,7 +711,7 @@ const styles = StyleSheet.create({
   durationNumber: {
     fontSize: 24,
     fontWeight: "700",
-    color: "#1a8e2d",
+    color: "#168A7D",
     marginBottom: 5,
   },
   selectedDurationNumber: {
@@ -764,8 +777,13 @@ const styles = StyleSheet.create({
   },
   switchLabelContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     flex: 1,
+    paddingRight: 10,
+  },
+  switchTextContainer: {
+    flex: 1,
+    flexShrink: 1,
   },
   iconContainer: {
     width: 40,

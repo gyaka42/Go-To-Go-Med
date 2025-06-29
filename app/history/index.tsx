@@ -11,6 +11,7 @@ import {
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import i18n from "../../utils/i18n";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   getDoseHistory,
@@ -79,36 +80,32 @@ export default function HistoryScreen() {
   const groupedHistory = groupHistoryByDate();
 
   const handleClearAllData = () => {
-    Alert.alert(
-      "Clear All Data",
-      "Are you sure you want to clear all medication data? This action cannot be undone.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
+    Alert.alert(i18n.t("clearAllDataTitle"), i18n.t("clearAllDataConfirm"), [
+      {
+        text: i18n.t("cancel"),
+        style: "cancel",
+      },
+      {
+        text: i18n.t("clearAll"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await clearAllData();
+            await loadHistory();
+            Alert.alert(i18n.t("success"), i18n.t("clearAllDataSuccess"));
+          } catch (error) {
+            console.error("Error clearing data:", error);
+            Alert.alert(i18n.t("error"), i18n.t("clearAllDataError"));
+          }
         },
-        {
-          text: "Clear All",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await clearAllData();
-              await loadHistory();
-              Alert.alert("Success", "All data has been cleared successfully");
-            } catch (error) {
-              console.error("Error clearing data:", error);
-              Alert.alert("Error", "Failed to clear data. Please try again.");
-            }
-          },
-        },
-      ]
-    );
+      },
+    ]);
   };
 
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["#1a8e2d", "#146922"]}
+        colors={["#168A7D", "#76E3D4"]}
         style={styles.headerGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -122,7 +119,7 @@ export default function HistoryScreen() {
           >
             <Ionicons name="chevron-back" size={28} color="#1a8e2d" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>History Log</Text>
+          <Text style={styles.headerTitle}>{i18n.t("historyLog")}</Text>
         </View>
 
         <View style={styles.filtersContainer}>
@@ -144,7 +141,7 @@ export default function HistoryScreen() {
                   selectedFilter === "all" && styles.filterTextActive,
                 ]}
               >
-                All
+                {i18n.t("all")}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -160,7 +157,7 @@ export default function HistoryScreen() {
                   selectedFilter === "taken" && styles.filterTextActive,
                 ]}
               >
-                Taken
+                {i18n.t("takenFilter")}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -176,7 +173,7 @@ export default function HistoryScreen() {
                   selectedFilter === "missed" && styles.filterTextActive,
                 ]}
               >
-                Missed
+                {i18n.t("missedFilter")}
               </Text>
             </TouchableOpacity>
           </ScrollView>
@@ -205,7 +202,7 @@ export default function HistoryScreen() {
                   />
                   <View style={styles.medicationInfo}>
                     <Text style={styles.medicationName}>
-                      {dose.medication?.name || "Unknown Medication"}
+                      {dose.medication?.name || i18n.t("unknownMedication")}
                     </Text>
                     <Text style={styles.medicationDosage}>
                       {dose.medication?.dosage}
@@ -231,7 +228,7 @@ export default function HistoryScreen() {
                           color="#4CAF50"
                         />
                         <Text style={[styles.statusText, { color: "#4CAF50" }]}>
-                          Taken
+                          {i18n.t("taken")}
                         </Text>
                       </View>
                     ) : (
@@ -247,7 +244,7 @@ export default function HistoryScreen() {
                           color="#F44336"
                         />
                         <Text style={[styles.statusText, { color: "#F44336" }]}>
-                          Missed
+                          {i18n.t("missed")}
                         </Text>
                       </View>
                     )}
@@ -263,7 +260,7 @@ export default function HistoryScreen() {
               onPress={handleClearAllData}
             >
               <Ionicons name="trash-outline" size={20} color="#FF5252" />
-              <Text style={styles.clearDataText}>Clear All Data</Text>
+              <Text style={styles.clearDataText}>{i18n.t("clearAllData")}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -333,8 +330,8 @@ const styles = StyleSheet.create({
     borderColor: "#e0e0e0",
   },
   filterButtonActive: {
-    backgroundColor: "#1a8e2d",
-    borderColor: "#1a8e2d",
+    backgroundColor: "#168A7D",
+    borderColor: "#168A7D",
   },
   filterText: {
     fontSize: 14,

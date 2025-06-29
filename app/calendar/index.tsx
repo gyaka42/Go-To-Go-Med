@@ -10,6 +10,7 @@ import {
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import i18n from "../../utils/i18n";
 import {
   getMedications,
   getDoseHistory,
@@ -19,7 +20,9 @@ import {
 } from "../../utils/storage";
 import { useFocusEffect } from "@react-navigation/native";
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS = Array.from({ length: 7 }, (_, i) =>
+  new Date(2021, 0, 4 + i).toLocaleDateString(i18n.locale, { weekday: "short" })
+);
 
 export default function CalendarScreen() {
   const router = useRouter();
@@ -135,7 +138,7 @@ export default function CalendarScreen() {
           {taken ? (
             <View style={styles.takenBadge}>
               <Ionicons name="checkmark-circle" size={20} color="#4CAF50" />
-              <Text style={styles.takenText}>Taken</Text>
+              <Text style={styles.takenText}>{i18n.t("taken")}</Text>
             </View>
           ) : (
             <TouchableOpacity
@@ -148,7 +151,7 @@ export default function CalendarScreen() {
                 loadData();
               }}
             >
-              <Text style={styles.takeDoseText}>Take</Text>
+              <Text style={styles.takeDoseText}>{i18n.t("take")}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -159,7 +162,7 @@ export default function CalendarScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["#1a8e2d", "#146922"]}
+        colors={["#168A7D", "#76E3D4"]}
         style={styles.headerGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -171,9 +174,9 @@ export default function CalendarScreen() {
             onPress={() => router.back()}
             style={styles.backButton}
           >
-            <Ionicons name="chevron-back" size={28} color="#1a8e2d" />
+            <Ionicons name="chevron-back" size={28} color="#168A7D" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Calendar</Text>
+          <Text style={styles.headerTitle}>{i18n.t("calendar")}</Text>
         </View>
 
         <View style={styles.calendarContainer}>
@@ -192,7 +195,7 @@ export default function CalendarScreen() {
               <Ionicons name="chevron-back" size={24} color="#333" />
             </TouchableOpacity>
             <Text style={styles.monthText}>
-              {selectedDate.toLocaleString("default", {
+              {selectedDate.toLocaleString(i18n.locale, {
                 month: "long",
                 year: "numeric",
               })}
@@ -225,7 +228,7 @@ export default function CalendarScreen() {
 
         <View style={styles.scheduleContainer}>
           <Text style={styles.scheduleTitle}>
-            {selectedDate.toLocaleDateString("default", {
+            {selectedDate.toLocaleDateString(i18n.locale, {
               weekday: "long",
               month: "long",
               day: "numeric",

@@ -12,6 +12,7 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect } from "@react-navigation/native";
+import i18n from "../../utils/i18n";
 import {
   getMedications,
   Medication,
@@ -50,12 +51,14 @@ export default function RefillTrackerScreen() {
       await loadMedications();
 
       Alert.alert(
-        "Refill Recorded",
-        `${medication.name} has been refilled to ${medication.totalSupply} units.`
+        i18n.t("refillRecorded"),
+        `${medication.name} ${i18n.t("refilledTo")} ${
+          medication.totalSupply
+        } ${i18n.t("units")}`
       );
     } catch (error) {
       console.error("Error recording refill:", error);
-      Alert.alert("Error", "Failed to record refill. Please try again.");
+      Alert.alert(i18n.t("error"), i18n.t("refillFailed"));
     }
   };
 
@@ -64,19 +67,19 @@ export default function RefillTrackerScreen() {
       (medication.currentSupply / medication.totalSupply) * 100;
     if (percentage <= medication.refillAt) {
       return {
-        status: "Low",
+        status: i18n.t("low"),
         color: "#F44336",
         backgroundColor: "#FFEBEE",
       };
     } else if (percentage <= 50) {
       return {
-        status: "Medium",
+        status: i18n.t("medium"),
         color: "#FF9800",
         backgroundColor: "#FFF3E0",
       };
     } else {
       return {
-        status: "Good",
+        status: i18n.t("good"),
         color: "#4CAF50",
         backgroundColor: "#E8F5E9",
       };
@@ -86,7 +89,7 @@ export default function RefillTrackerScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["#1a8e2d", "#146922"]}
+        colors={["#168A7D", "#76E3D4"]}
         style={styles.headerGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -98,9 +101,9 @@ export default function RefillTrackerScreen() {
             onPress={() => router.back()}
             style={styles.backButton}
           >
-            <Ionicons name="chevron-back" size={28} color="#1a8e2d" />
+            <Ionicons name="chevron-back" size={28} color="#168A7D" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Refill Tracker</Text>
+          <Text style={styles.headerTitle}>{i18n.t("refillTracker")}</Text>
         </View>
 
         <ScrollView
@@ -110,12 +113,16 @@ export default function RefillTrackerScreen() {
           {medications.length === 0 ? (
             <View style={styles.emptyState}>
               <Ionicons name="medical-outline" size={48} color="#ccc" />
-              <Text style={styles.emptyStateText}>No medications to track</Text>
+              <Text style={styles.emptyStateText}>
+                {i18n.t("noMedicationsToday")}
+              </Text>
               <TouchableOpacity
                 style={styles.addButton}
                 onPress={() => router.push("/medications/add")}
               >
-                <Text style={styles.addButtonText}>Add Medication</Text>
+                <Text style={styles.addButtonText}>
+                  {i18n.t("addMedication")}
+                </Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -160,9 +167,11 @@ export default function RefillTrackerScreen() {
 
                   <View style={styles.supplyContainer}>
                     <View style={styles.supplyInfo}>
-                      <Text style={styles.supplyLabel}>Current Supply</Text>
+                      <Text style={styles.supplyLabel}>
+                        {i18n.t("currentSupply")}
+                      </Text>
                       <Text style={styles.supplyValue}>
-                        {medication.currentSupply} units
+                        {medication.currentSupply} {i18n.t("units")}
                       </Text>
                     </View>
                     <View style={styles.progressBarContainer}>
@@ -183,11 +192,11 @@ export default function RefillTrackerScreen() {
                     </View>
                     <View style={styles.refillInfo}>
                       <Text style={styles.refillLabel}>
-                        Refill at: {medication.refillAt}%
+                        {i18n.t("refillAt")}: {medication.refillAt}%
                       </Text>
                       {medication.lastRefillDate && (
                         <Text style={styles.lastRefillDate}>
-                          Last refill:{" "}
+                          {i18n.t("lastRefill")}:{" "}
                           {new Date(
                             medication.lastRefillDate
                           ).toLocaleDateString()}
@@ -207,7 +216,9 @@ export default function RefillTrackerScreen() {
                     onPress={() => handleRefill(medication)}
                     disabled={supplyPercentage >= 100}
                   >
-                    <Text style={styles.refillButtonText}>Record Refill</Text>
+                    <Text style={styles.refillButtonText}>
+                      {i18n.t("recordRefill")}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               );

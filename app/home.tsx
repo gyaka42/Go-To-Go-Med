@@ -14,6 +14,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import i18n from "../utils/i18n";
 import Svg, { Circle } from "react-native-svg";
 import {
   getMedications,
@@ -36,31 +37,31 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const QUICK_ACTIONS = [
   {
     icon: "add-circle-outline" as const,
-    label: "Medicatie\nToevoegen",
+    label: i18n.t("addMedication"),
     route: "/medications/add" as const,
-    color: "#2E7D32",
-    gradient: ["#4CAF50", "#2E7D32"] as [string, string],
+    color: "#76E3D4",
+    gradient: ["#76E3D4", "#168A7D"] as [string, string],
   },
   {
     icon: "calendar-outline" as const,
-    label: "Kalender\nWeergave",
+    label: i18n.t("calendarView"),
     route: "/calendar" as const,
-    color: "#1976D2",
-    gradient: ["#2196F3", "#1976D2"] as [string, string],
+    color: "#FDA4AF",
+    gradient: ["#ffc2c9", "#FDA4AF"] as [string, string],
   },
   {
     icon: "time-outline" as const,
-    label: "Geschiedenis\nLogboek",
+    label: i18n.t("historyLog"),
     route: "/history" as const,
     color: "#C2185B",
-    gradient: ["#E91E63", "#C2185B"] as [string, string],
+    gradient: ["#cf6b92", "#C2185B"] as [string, string],
   },
   {
     icon: "medical-outline" as const,
-    label: "Navul\nTracker",
+    label: i18n.t("refillTracker"),
     route: "/refills" as const,
     color: "#E64A19",
-    gradient: ["#FF5722", "#E64A19"] as [string, string],
+    gradient: ["#ff835c", "#E64A19"] as [string, string],
   },
 ];
 
@@ -254,7 +255,7 @@ export default function HomeScreen() {
         <View style={styles.headerContent}>
           <View style={styles.headerTop}>
             <View style={styles.flex1}>
-              <Text style={styles.greeting}>Daily Progress</Text>
+              <Text style={styles.greeting}>{i18n.t("dailyProgress")}</Text>
             </View>
             <TouchableOpacity
               style={styles.notificationButton}
@@ -280,7 +281,7 @@ export default function HomeScreen() {
 
       <View style={styles.content}>
         <View style={styles.quickActionsContainer}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={styles.sectionTitle}>{i18n.t("quickActions")}</Text>
           <View style={styles.quickActionsGrid}>
             {QUICK_ACTIONS.map((action) => (
               <Link href={action.route} key={action.label} asChild>
@@ -304,10 +305,12 @@ export default function HomeScreen() {
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Medicatie vandaag</Text>
+            <Text style={styles.sectionTitle}>
+              {i18n.t("medicationsToday")}
+            </Text>
             <Link href="/calendar" asChild>
               <TouchableOpacity>
-                <Text style={styles.seeAllButton}>Toon Alles</Text>
+                <Text style={styles.seeAllButton}>{i18n.t("showAll")}</Text>
               </TouchableOpacity>
             </Link>
           </View>
@@ -315,12 +318,12 @@ export default function HomeScreen() {
             <View style={styles.emptyState}>
               <Ionicons name="medical-outline" size={48} color="#ccc" />
               <Text style={styles.emptyStateText}>
-                No medications scheduled for today
+                {i18n.t("noMedicationsToday")}
               </Text>
               <Link href="/medications/add" asChild>
                 <TouchableOpacity style={styles.addMedicationButton}>
                   <Text style={styles.addMedicationButtonText}>
-                    Add Medication
+                    {i18n.t("addMedication")}
                   </Text>
                 </TouchableOpacity>
               </Link>
@@ -359,7 +362,7 @@ export default function HomeScreen() {
                         size={20}
                         color="#4CAF50"
                       />
-                      <Text style={styles.takenText}>Taken</Text>
+                      <Text style={styles.takenText}>{i18n.t("taken")}</Text>
                     </View>
                   ) : (
                     <TouchableOpacity
@@ -369,7 +372,7 @@ export default function HomeScreen() {
                       ]}
                       onPress={() => handleTakeDose(medication)}
                     >
-                      <Text style={styles.takeDoseText}>Take</Text>
+                      <Text style={styles.takeDoseText}>{i18n.t("take")}</Text>
                     </TouchableOpacity>
                   )}
                 </View>
@@ -388,7 +391,7 @@ export default function HomeScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Notifications</Text>
+              <Text style={styles.modalTitle}>{i18n.t("notifications")}</Text>
               <TouchableOpacity
                 onPress={() => setShowNotifications(false)}
                 style={styles.closeButton}

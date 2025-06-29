@@ -10,6 +10,7 @@ import { useRouter } from "expo-router";
 import * as LocalAuthentication from "expo-local-authentication";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import i18n from "../utils/i18n";
 
 const { width } = Dimensions.get("window");
 
@@ -64,14 +65,12 @@ export default function AuthScreen() {
         <View style={styles.iconContainer}>
           <Ionicons name="medkit-outline" size={80} color="white" />
         </View>
-        <Text style={styles.title}>Go-To-Go Med!</Text>
-        <Text style={styles.subtitle}>Je Persoonlijke Medicatie Assistent</Text>
+        <Text style={styles.title}>{i18n.t("appName")}</Text>
+        <Text style={styles.subtitle}>{i18n.t("personalAssistant")}</Text>
         <View style={styles.card}>
-          <Text style={styles.welcomeText}>Welkom Terug!</Text>
+          <Text style={styles.welcomeText}>{i18n.t("welcomeBack")}</Text>
           <Text style={styles.instructionText}>
-            {hasBiometrics
-              ? "Gebruik Face ID/TouchID of Pin om toegang te krijgen tot je medicatie"
-              : "Voer in je PIN code om toegang te krijgen tot je medicatie"}
+            {hasBiometrics ? i18n.t("biometricsPrompt") : i18n.t("pinPrompt")}
           </Text>
 
           <TouchableOpacity
@@ -87,10 +86,10 @@ export default function AuthScreen() {
             />
             <Text style={styles.buttonText}>
               {isAuthenticating
-                ? "Verifieren..."
+                ? i18n.t("verifying")
                 : hasBiometrics
-                ? "Authenticeren"
-                : "Voer in PIN"}
+                ? i18n.t("authenticate")
+                : i18n.t("enterPin")}
             </Text>
           </TouchableOpacity>
 

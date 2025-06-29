@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useRef } from "react";
 import { useRouter } from "expo-router";
+import i18n from "../utils/i18n";
 
 export default function SplashScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -42,7 +43,7 @@ export default function SplashScreen() {
         ]}
       >
         <Ionicons name="medkit" size={100} color="white" />
-        <Text style={styles.appName}>Go-To-Go Med!</Text>
+        <Text style={styles.appName}>{i18n.t("appName")}</Text>
       </Animated.View>
     </View>
   );
