@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,6 +19,7 @@ import {
   Medication,
   DoseHistory,
 } from "../../utils/storage";
+import { isMedicationDue } from "../../utils/time";
 import { useFocusEffect } from "@react-navigation/native";
 
 const WEEKDAYS = Array.from({ length: 7 }, (_, i) =>
@@ -147,6 +149,10 @@ export default function CalendarScreen() {
                 { backgroundColor: medication.color },
               ]}
               onPress={async () => {
+                if (!isMedicationDue(medication, selectedDate)) {
+                  Alert.alert(i18n.t("error"), i18n.t("medicationTooEarly"));
+                  return;
+                }
                 await recordDose(medication.id, true, new Date().toISOString());
                 loadData();
               }}

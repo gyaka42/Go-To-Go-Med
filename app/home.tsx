@@ -23,6 +23,7 @@ import {
   recordDose,
   DoseHistory,
 } from "../utils/storage";
+import { isMedicationDue } from "../utils/time";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   registerForPushNotificationsAsync,
@@ -229,12 +230,17 @@ export default function HomeScreen() {
   );
 
   const handleTakeDose = async (medication: Medication) => {
+    if (!isMedicationDue(medication)) {
+      Alert.alert(i18n.t("error"), i18n.t("medicationTooEarly"));
+      return;
+    }
+
     try {
       await recordDose(medication.id, true, new Date().toISOString());
       await loadMedications(); // Reload data after recording dose
     } catch (error) {
       console.error("Error recording dose:", error);
-      Alert.alert("Error", "Failed to record dose. Please try again.");
+      Alert.alert(i18n.t("error"), i18n.t("failedToSaveMedication"));
     }
   };
 
