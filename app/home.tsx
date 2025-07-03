@@ -250,10 +250,11 @@ export default function HomeScreen() {
     );
   };
 
-  const progress =
-    todaysMedications.length > 0
-      ? completedDoses / (todaysMedications.length * 2)
-      : 0;
+  const totalDoses = todaysMedications.reduce(
+    (sum, med) => sum + (med.times.length > 0 ? med.times.length : 1),
+    0
+  );
+  const progress = totalDoses > 0 ? completedDoses / totalDoses : 0;
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -279,7 +280,7 @@ export default function HomeScreen() {
           </View>
           <CircularProgress
             progress={progress}
-            totalDoses={todaysMedications.length * 2}
+            totalDoses={totalDoses}
             completedDoses={completedDoses}
           />
         </View>

@@ -85,6 +85,7 @@ export default function AddMedicationScreen() {
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [selectedTimeIndex, setSelectedTimeIndex] = useState(0);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedFrequency, setSelectedFrequency] = useState("");
   const [selectedDuration, setSelectedDuration] = useState("");
@@ -394,6 +395,7 @@ export default function AddMedicationScreen() {
                     key={index}
                     style={styles.timeButton}
                     onPress={() => {
+                      setSelectedTimeIndex(index);
                       setShowTimePicker(true);
                     }}
                   >
@@ -410,7 +412,9 @@ export default function AddMedicationScreen() {
             {showTimePicker && (
               <DateTimePicker
                 value={(() => {
-                  const [hours, minutes] = form.times[0].split(":").map(Number);
+                  const [hours, minutes] = form.times[selectedTimeIndex]
+                    .split(":")
+                    .map(Number);
                   const date = new Date();
                   date.setHours(hours, minutes, 0, 0);
                   return date;
@@ -426,7 +430,9 @@ export default function AddMedicationScreen() {
                     });
                     setForm((prev) => ({
                       ...prev,
-                      times: prev.times.map((t, i) => (i === 0 ? newTime : t)),
+                      times: prev.times.map((t, i) =>
+                        i === selectedTimeIndex ? newTime : t
+                      ),
                     }));
                   }
                 }}
