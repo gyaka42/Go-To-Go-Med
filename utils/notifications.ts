@@ -52,10 +52,11 @@ export async function registerForPushNotificationsAsync(): Promise<
 
 export async function scheduleMedicationReminder(
   medication: Medication
-): Promise<string | undefined> {
+): Promise<string[] | undefined> {
   if (!medication.reminderEnabled) return;
 
   try {
+    const identifiers: string[] = [];
     // Schedule notifications for each time
     for (const time of medication.times) {
       const [hours, minutes] = time.split(":").map(Number);
@@ -84,8 +85,10 @@ export async function scheduleMedicationReminder(
         } as Notifications.CalendarTriggerInput,
       });
 
-      return identifier;
+      identifiers.push(identifier);
     }
+
+    return identifiers;
   } catch (error) {
     console.error("Error scheduling medication reminder:", error);
     return undefined;

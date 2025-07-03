@@ -215,10 +215,7 @@ export default function AddMedicationScreen() {
               styles.optionCard,
               selectedFrequency === freq.label && styles.selectedOptionCard,
             ]}
-            onPress={() => {
-              setSelectedFrequency(freq.label);
-              setForm({ ...form, frequency: freq.label });
-            }}
+            onPress={() => handleFrequencySelect(freq.label)}
           >
             <View
               style={[
