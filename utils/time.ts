@@ -37,3 +37,31 @@ export function isMedicationDue(
     return now >= due;
   });
 }
+
+/**
+ * Determine if a medication is active on the provided date based on its
+ * start date and duration. Durations that don't begin with a number are
+ * treated as ongoing.
+ */
+export function isMedicationActiveOnDate(
+  medication: Medication,
+  date: Date = new Date()
+): boolean {
+  const start = new Date(medication.startDate);
+  start.setHours(0, 0, 0, 0);
+
+  const check = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+  const durationDays = parseInt(medication.duration.split(" ")[0]);
+
+  // Non-numeric durations are considered ongoing (-1)
+  if (isNaN(durationDays) || durationDays === -1) {
+    return check >= start;
+  }
+
+  const end = new Date(start);
+  // Inclusive of the last day
+  end.setDate(end.getDate() + durationDays - 1);
+
+  return check >= start && check <= end;
+}

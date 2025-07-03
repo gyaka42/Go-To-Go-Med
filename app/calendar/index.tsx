@@ -19,7 +19,7 @@ import {
   Medication,
   DoseHistory,
 } from "../../utils/storage";
-import { isMedicationDue } from "../../utils/time";
+import { isMedicationDue, isMedicationActiveOnDate } from "../../utils/time";
 import { useFocusEffect } from "@react-navigation/native";
 
 const WEEKDAYS = Array.from({ length: 7 }, (_, i) =>
@@ -119,7 +119,11 @@ export default function CalendarScreen() {
       (dose) => new Date(dose.timestamp).toDateString() === dateStr
     );
 
-    return medications.map((medication) => {
+    const activeMeds = medications.filter((med) =>
+      isMedicationActiveOnDate(med, selectedDate)
+    );
+
+    return activeMeds.map((medication) => {
       const taken = dayDoses.some(
         (dose) => dose.medicationId === medication.id && dose.taken
       );
