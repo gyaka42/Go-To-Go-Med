@@ -55,8 +55,8 @@ export default function HistoryScreen() {
     }, [loadHistory])
   );
 
-  const groupHistoryByDate = () => {
-    const grouped = history.reduce((acc, dose) => {
+  const groupHistoryByDate = (list: EnrichedDoseHistory[]) => {
+    const grouped = list.reduce((acc, dose) => {
       const date = new Date(dose.timestamp).toDateString();
       if (!acc[date]) {
         acc[date] = [];
@@ -77,7 +77,7 @@ export default function HistoryScreen() {
     return true;
   });
 
-  const groupedHistory = groupHistoryByDate();
+  const groupedHistory = groupHistoryByDate(filteredHistory);
 
   const handleClearAllData = () => {
     Alert.alert(i18n.t("clearAllDataTitle"), i18n.t("clearAllDataConfirm"), [

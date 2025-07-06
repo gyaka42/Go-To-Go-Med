@@ -12,7 +12,7 @@ import {
   AppState,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, useRouter } from "expo-router";
+import { Link } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import i18n from "../utils/i18n";
 import Svg, { Circle } from "react-native-svg";
@@ -89,7 +89,7 @@ function CircularProgress({
       duration: 1500,
       useNativeDriver: true,
     }).start();
-  }, [progress]);
+  }, [progress, animatedValue]);
 
   const strokeDashoffset = animatedValue.interpolate({
     inputRange: [0, 1],
@@ -133,10 +133,7 @@ function CircularProgress({
 }
 
 export default function HomeScreen() {
-  const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [medications, setMedications] = useState<Medication[]>([]);
-  const [todaysMedications, setTodaysMedications] = useState<Medication[]>([]);
   const [todaysSchedule, setTodaysSchedule] = useState<
     { medication: Medication; time: string }[]
   >([]);
@@ -151,7 +148,6 @@ export default function HomeScreen() {
       ]);
 
       setDoseHistory(todaysDoses);
-      setMedications(allMedications);
 
       // Filter medications for today
       const today = new Date();
@@ -172,8 +168,6 @@ export default function HomeScreen() {
         }
         return false;
       });
-
-      setTodaysMedications(todayMeds);
 
       const schedule = todayMeds.flatMap((med) =>
         med.times.length > 0
@@ -232,7 +226,7 @@ export default function HomeScreen() {
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [loadMedications]);
 
   // Use useFocusEffect for subsequent updates
   useFocusEffect(
