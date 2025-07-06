@@ -55,7 +55,8 @@ export default function CalendarScreen() {
     const year = date.getFullYear();
     const month = date.getMonth();
     const days = new Date(year, month + 1, 0).getDate();
-    const firstDay = new Date(year, month, 1).getDay();
+    // Adjust so the week starts on Monday instead of Sunday
+    const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
     return { days, firstDay };
   };
 
