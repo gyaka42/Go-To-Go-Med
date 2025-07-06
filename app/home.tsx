@@ -137,6 +137,9 @@ export default function HomeScreen() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [medications, setMedications] = useState<Medication[]>([]);
   const [todaysMedications, setTodaysMedications] = useState<Medication[]>([]);
+  const [todaysSchedule, setTodaysSchedule] = useState<
+    { medication: Medication; time: string }[]
+  >([]);
   const [completedDoses, setCompletedDoses] = useState(0);
   const [doseHistory, setDoseHistory] = useState<DoseHistory[]>([]);
 
@@ -171,6 +174,20 @@ export default function HomeScreen() {
       });
 
       setTodaysMedications(todayMeds);
+
+      const schedule = todayMeds.flatMap((med) =>
+        med.times.length > 0
+          ? med.times.map((t) => ({ medication: med, time: t }))
+          : [{ medication: med, time: "" }]
+      );
+      schedule.sort((a, b) => {
+        if (!a.time) return 1;
+        if (!b.time) return -1;
+        const [ah, am] = a.time.split(":").map(Number);
+        const [bh, bm] = b.time.split(":").map(Number);
+        return ah * 60 + am - (bh * 60 + bm);
+      });
+      setTodaysSchedule(schedule);
 
       // Calculate completed doses
       const completed = todaysDoses.filter((dose) => dose.taken).length;
@@ -229,14 +246,14 @@ export default function HomeScreen() {
     }, [loadMedications])
   );
 
-  const handleTakeDose = async (medication: Medication) => {
+  const handleTakeDose = async (medication: Medication, time: string) => {
     if (!isMedicationDue(medication)) {
       Alert.alert(i18n.t("error"), i18n.t("medicationTooEarly"));
       return;
     }
 
     try {
-      await recordDose(medication.id, true, new Date().toISOString());
+      await recordDose(medication.id, time, true, new Date().toISOString());
       await loadMedications(); // Reload data after recording dose
     } catch (error) {
       console.error("Error recording dose:", error);
@@ -244,16 +261,16 @@ export default function HomeScreen() {
     }
   };
 
-  const isDoseTaken = (medicationId: string) => {
+  const isDoseTaken = (medicationId: string, time: string) => {
     return doseHistory.some(
-      (dose) => dose.medicationId === medicationId && dose.taken
+      (dose) =>
+        dose.medicationId === medicationId &&
+        dose.scheduledTime === time &&
+        dose.taken
     );
   };
 
-  const totalDoses = todaysMedications.reduce(
-    (sum, med) => sum + (med.times.length > 0 ? med.times.length : 1),
-    0
-  );
+  const totalDoses = todaysSchedule.length;
   const progress = totalDoses > 0 ? completedDoses / totalDoses : 0;
 
   return (
@@ -269,10 +286,10 @@ export default function HomeScreen() {
               onPress={() => setShowNotifications(true)}
             >
               <Ionicons name="notifications-outline" size={24} color="white" />
-              {todaysMedications.length > 0 && (
+              {todaysSchedule.length > 0 && (
                 <View style={styles.notificationBadge}>
                   <Text style={styles.notificationCount}>
-                    {todaysMedications.length}
+                    {todaysSchedule.length}
                   </Text>
                 </View>
               )}
@@ -321,7 +338,7 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </Link>
           </View>
-          {todaysMedications.length === 0 ? (
+          {todaysSchedule.length === 0 ? (
             <View style={styles.emptyState}>
               <Ionicons name="medical-outline" size={48} color="#ccc" />
               <Text style={styles.emptyStateText}>
@@ -336,10 +353,10 @@ export default function HomeScreen() {
               </Link>
             </View>
           ) : (
-            todaysMedications.map((medication) => {
-              const taken = isDoseTaken(medication.id);
+            todaysSchedule.map(({ medication, time }) => {
+              const taken = isDoseTaken(medication.id, time);
               return (
-                <View key={medication.id} style={styles.doseCard}>
+                <View key={`${medication.id}-${time}`} style={styles.doseCard}>
                   <View
                     style={[
                       styles.doseBadge,
@@ -359,7 +376,9 @@ export default function HomeScreen() {
                     </View>
                     <View style={styles.doseTime}>
                       <Ionicons name="time-outline" size={16} color="#666" />
-                      <Text style={styles.timeText}>{medication.times[0]}</Text>
+                      <Text style={styles.timeText}>
+                        {time || i18n.t("asNeeded")}
+                      </Text>
                     </View>
                   </View>
                   {taken ? (
@@ -377,7 +396,7 @@ export default function HomeScreen() {
                         styles.takeDoseButton,
                         { backgroundColor: medication.color },
                       ]}
-                      onPress={() => handleTakeDose(medication)}
+                      onPress={() => handleTakeDose(medication, time)}
                     >
                       <Text style={styles.takeDoseText}>{i18n.t("take")}</Text>
                     </TouchableOpacity>
@@ -408,8 +427,11 @@ export default function HomeScreen() {
                 <Ionicons name="close" size={24} color="#333" />
               </TouchableOpacity>
             </View>
-            {todaysMedications.map((medication) => (
-              <View key={medication.id} style={styles.notificationItem}>
+            {todaysSchedule.map(({ medication, time }) => (
+              <View
+                key={`${medication.id}-${time}`}
+                style={styles.notificationItem}
+              >
                 <View style={styles.notificationIcon}>
                   <Ionicons name="medical" size={24} color={medication.color} />
                 </View>
@@ -421,7 +443,7 @@ export default function HomeScreen() {
                     {medication.dosage}
                   </Text>
                   <Text style={styles.notificationTime}>
-                    {medication.times[0]}
+                    {time || i18n.t("asNeeded")}
                   </Text>
                 </View>
               </View>

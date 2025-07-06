@@ -22,6 +22,7 @@ export interface Medication {
 export interface DoseHistory {
   id: string;
   medicationId: string;
+  scheduledTime: string;
   timestamp: string;
   taken: boolean;
 }
@@ -104,6 +105,7 @@ export async function getTodaysDoses(): Promise<DoseHistory[]> {
 
 export async function recordDose(
   medicationId: string,
+  scheduledTime: string,
   taken: boolean,
   timestamp: string
 ): Promise<void> {
@@ -112,6 +114,7 @@ export async function recordDose(
     const newDose: DoseHistory = {
       id: Math.random().toString(36).substr(2, 9),
       medicationId,
+      scheduledTime,
       timestamp,
       taken,
     };

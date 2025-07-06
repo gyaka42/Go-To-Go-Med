@@ -123,13 +123,22 @@ export default function CalendarScreen() {
       isMedicationActiveOnDate(med, selectedDate)
     );
 
-    return activeMeds.map((medication) => {
+    const schedule = activeMeds.flatMap((med) =>
+      med.times.length > 0
+        ? med.times.map((t) => ({ medication: med, time: t }))
+        : [{ medication: med, time: "" }]
+    );
+
+    return schedule.map(({ medication, time }) => {
       const taken = dayDoses.some(
-        (dose) => dose.medicationId === medication.id && dose.taken
+        (dose) =>
+          dose.medicationId === medication.id &&
+          dose.scheduledTime === time &&
+          dose.taken
       );
 
       return (
-        <View key={medication.id} style={styles.medicationCard}>
+        <View key={`${medication.id}-${time}`} style={styles.medicationCard}>
           <View
             style={[
               styles.medicationColor,
@@ -139,7 +148,9 @@ export default function CalendarScreen() {
           <View style={styles.medicationInfo}>
             <Text style={styles.medicationName}>{medication.name}</Text>
             <Text style={styles.medicationDosage}>{medication.dosage}</Text>
-            <Text style={styles.medicationTime}>{medication.times[0]}</Text>
+            <Text style={styles.medicationTime}>
+              {time || i18n.t("asNeeded")}
+            </Text>
           </View>
           {taken ? (
             <View style={styles.takenBadge}>
@@ -157,7 +168,12 @@ export default function CalendarScreen() {
                   Alert.alert(i18n.t("error"), i18n.t("medicationTooEarly"));
                   return;
                 }
-                await recordDose(medication.id, true, new Date().toISOString());
+                await recordDose(
+                  medication.id,
+                  time,
+                  true,
+                  new Date().toISOString()
+                );
                 loadData();
               }}
             >
