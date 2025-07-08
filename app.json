@@ -2,7 +2,7 @@
   "expo": {
     "name": "go-to-go-med",
     "slug": "go-to-go-med",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "gotogomed",
@@ -14,14 +14,17 @@
         "NSFaceIDUsageDescription": "Deze app gebruikt Face ID om toegang te beveiligen tot je medicatiegegevens.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.gogo22.gotogomed"
+      "bundleIdentifier": "com.gogo22.gotogomed",
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.gogo22.gotogomed",
+      "versionCode": 2
     },
     "web": {
       "bundler": "metro",
