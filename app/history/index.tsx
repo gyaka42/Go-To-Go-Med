@@ -19,6 +19,7 @@ import {
   DoseHistory,
   Medication,
   clearAllData,
+  syncMissedDoses,
 } from "../../utils/storage";
 
 type EnrichedDoseHistory = DoseHistory & { medication?: Medication };
@@ -32,6 +33,7 @@ export default function HistoryScreen() {
 
   const loadHistory = useCallback(async () => {
     try {
+      await syncMissedDoses();
       const [doseHistory, medications] = await Promise.all([
         getDoseHistory(),
         getMedications(),

@@ -121,7 +121,7 @@ i18n.translations = {
     addMedication: "Medicatie toevoegen",
     adding: "Toevoegen...",
     calendarView: "Kalenderweergave",
-    historyLog: "Medicatiegeschiedenis",
+    historyLog: "Medicatie geschiedenis",
     refillTracker: "Navulherinnering",
     taken: "Ingenomen",
     take: "Innemen",
@@ -706,8 +706,7 @@ i18n.translations = {
 };
 
 // Set the locale based on the device settings
-const deviceLocale =
-  Localization.locale ?? Localization.getLocales()[0]?.languageTag ?? "en";
+const deviceLocale = Localization.getLocales()[0]?.languageTag ?? "en";
 i18n.locale = deviceLocale;
 
 export default i18n;

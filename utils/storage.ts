@@ -111,19 +111,41 @@ export async function recordDose(
 ): Promise<void> {
   try {
     const history = await getDoseHistory();
-    const newDose: DoseHistory = {
-      id: Math.random().toString(36).substr(2, 9),
-      medicationId,
-      scheduledTime,
-      timestamp,
-      taken,
-    };
+    const existingIndex = history.findIndex(
+      (dose) =>
+        dose.medicationId === medicationId &&
+        dose.scheduledTime === scheduledTime &&
+        new Date(dose.timestamp).toDateString() ===
+          new Date(timestamp).toDateString()
+    );
 
-    history.push(newDose);
+    let decrementSupply = false;
+    if (existingIndex !== -1) {
+      decrementSupply = taken && !history[existingIndex].taken;
+      history[existingIndex] = {
+        ...history[existingIndex],
+        taken,
+        timestamp,
+      };
+    } else {
+      history.push({
+        id: Math.random().toString(36).substr(2, 9),
+        medicationId,
+        scheduledTime,
+        timestamp,
+        taken,
+      });
+      decrementSupply = taken;
+    }
+
+    history.sort(
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
     await AsyncStorage.setItem(DOSE_HISTORY_KEY, JSON.stringify(history));
 
     // Update medication supply if taken
-    if (taken) {
+    if (decrementSupply) {
       const medications = await getMedications();
       const medication = medications.find((med) => med.id === medicationId);
       if (medication && medication.currentSupply > 0) {
@@ -143,5 +165,76 @@ export async function clearAllData(): Promise<void> {
   } catch (error) {
     console.error("Error clearing data:", error);
     throw error;
+  }
+}
+/**
+ * Ensure missed doses are recorded in history.
+ * This creates a history entry with `taken: false` for any
+ * scheduled dose that has passed without being marked as taken.
+ */
+export async function syncMissedDoses(): Promise<void> {
+  const [medications, history] = await Promise.all([
+    getMedications(),
+    getDoseHistory(),
+  ]);
+
+  const now = new Date();
+  let updated = false;
+
+  for (const medication of medications) {
+    const start = new Date(medication.startDate);
+    start.setHours(0, 0, 0, 0);
+
+    const durationDays = parseInt(medication.duration.split(" ")[0]);
+    const totalDays =
+      isNaN(durationDays) || durationDays === -1
+        ? Math.floor((now.getTime() - start.getTime()) / 86400000) + 1
+        : Math.min(
+            durationDays,
+            Math.floor((now.getTime() - start.getTime()) / 86400000) + 1
+          );
+
+    for (let d = 0; d < totalDays; d++) {
+      const date = new Date(start);
+      date.setDate(start.getDate() + d);
+      if (date > now) break;
+
+      if (medication.times.length === 0) {
+        continue; // as-needed medications cannot be automatically missed
+      }
+
+      for (const time of medication.times) {
+        const [h, m] = time.split(":").map(Number);
+        const scheduled = new Date(date);
+        scheduled.setHours(h, m, 0, 0);
+        if (scheduled > now) continue;
+
+        const exists = history.find(
+          (dose) =>
+            dose.medicationId === medication.id &&
+            dose.scheduledTime === time &&
+            new Date(dose.timestamp).toDateString() === scheduled.toDateString()
+        );
+
+        if (!exists) {
+          history.push({
+            id: Math.random().toString(36).substr(2, 9),
+            medicationId: medication.id,
+            scheduledTime: time,
+            timestamp: scheduled.toISOString(),
+            taken: false,
+          });
+          updated = true;
+        }
+      }
+    }
+  }
+
+  if (updated) {
+    history.sort(
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
+    await AsyncStorage.setItem(DOSE_HISTORY_KEY, JSON.stringify(history));
   }
 }
