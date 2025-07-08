@@ -28,6 +28,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import {
   registerForPushNotificationsAsync,
   scheduleMedicationReminder,
+  setAppBadgeCount,
 } from "../utils/notifications";
 
 const { width } = Dimensions.get("window");
@@ -186,6 +187,9 @@ export default function HomeScreen() {
       // Calculate completed doses
       const completed = todaysDoses.filter((dose) => dose.taken).length;
       setCompletedDoses(completed);
+
+      const remaining = schedule.length - completed;
+      await setAppBadgeCount(remaining > 0 ? remaining : 0);
     } catch (error) {
       console.error("Error loading medications:", error);
     }
@@ -266,6 +270,7 @@ export default function HomeScreen() {
 
   const totalDoses = todaysSchedule.length;
   const progress = totalDoses > 0 ? completedDoses / totalDoses : 0;
+  const remainingDoses = totalDoses - completedDoses;
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -280,11 +285,9 @@ export default function HomeScreen() {
               onPress={() => setShowNotifications(true)}
             >
               <Ionicons name="notifications-outline" size={24} color="white" />
-              {todaysSchedule.length > 0 && (
+              {remainingDoses > 0 && (
                 <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationCount}>
-                    {todaysSchedule.length}
-                  </Text>
+                  <Text style={styles.notificationCount}>{remainingDoses}</Text>
                 </View>
               )}
             </TouchableOpacity>

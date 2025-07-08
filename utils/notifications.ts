@@ -159,3 +159,11 @@ export async function updateMedicationReminders(
     console.error("Error updating medication reminders:", error);
   }
 }
+
+export async function setAppBadgeCount(count: number): Promise<void> {
+  try {
+    await Notifications.setBadgeCountAsync(count);
+  } catch (error) {
+    console.error("Error setting badge count:", error);
+  }
+}
