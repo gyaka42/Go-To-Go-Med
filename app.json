@@ -2,7 +2,7 @@
   "expo": {
     "name": "go-to-go-med",
     "slug": "go-to-go-med",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "gotogomed",
@@ -15,7 +15,7 @@
         "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.gogo22.gotogomed",
-      "buildNumber": "2"
+      "buildNumber": "3"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +24,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.gogo22.gotogomed",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "bundler": "metro",
