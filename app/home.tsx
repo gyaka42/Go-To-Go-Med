@@ -23,7 +23,7 @@ import {
   recordDose,
   DoseHistory,
 } from "../utils/storage";
-import { isMedicationDue } from "../utils/time";
+import { isMedicationDue, isMedicationActiveOnDate } from "../utils/time";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   registerForPushNotificationsAsync,
@@ -150,25 +150,11 @@ export default function HomeScreen() {
 
       setDoseHistory(todaysDoses);
 
-      // Filter medications for today
+      // Filter medications that are active today
       const today = new Date();
-      const todayMeds = allMedications.filter((med) => {
-        const startDate = new Date(med.startDate);
-        const durationDays = parseInt(med.duration.split(" ")[0]);
-
-        // For ongoing medications or if within duration
-        if (
-          durationDays === -1 ||
-          (today >= startDate &&
-            today <=
-              new Date(
-                startDate.getTime() + durationDays * 24 * 60 * 60 * 1000
-              ))
-        ) {
-          return true;
-        }
-        return false;
-      });
+      const todayMeds = allMedications.filter((med) =>
+        isMedicationActiveOnDate(med, today)
+      );
 
       const schedule = todayMeds.flatMap((med) =>
         med.times.length > 0
