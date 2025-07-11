@@ -9,9 +9,10 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "name": "GoToGo Med",
+      "name": "GoToGo Med!",
       "supportsTablet": true,
       "infoPlist": {
+        "CFBundleDisplayName": "GoToGo Med!",
         "NSFaceIDUsageDescription": "Deze app gebruikt Face ID om toegang te beveiligen tot je medicatiegegevens.",
         "ITSAppUsesNonExemptEncryption": false
       },
