@@ -16,6 +16,15 @@
         "NSFaceIDUsageDescription": "Deze app gebruikt Face ID om toegang te beveiligen tot je medicatiegegevens.",
         "ITSAppUsesNonExemptEncryption": false
       },
+      "locales": {
+        "en": "./locales/en.json",
+        "nl": "./locales/nl.json",
+        "tr": "./locales/tr.json",
+        "de": "./locales/de.json",
+        "es": "./locales/es.json",
+        "fr": "./locales/fr.json",
+        "it": "./locales/it.json"
+      },
       "bundleIdentifier": "com.gogo22.gotogomed",
       "buildNumber": "4"
     },
