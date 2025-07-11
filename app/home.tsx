@@ -104,7 +104,7 @@ function CircularProgress({
           {Math.round(progress * 100)}%
         </Text>
         <Text style={styles.progressDetails}>
-          {completedDoses} van {totalDoses} doses
+          {completedDoses} {i18n.t("of")} {totalDoses} {i18n.t("doses")}
         </Text>
       </View>
       <Svg width={size} height={size} style={styles.progressRing}>

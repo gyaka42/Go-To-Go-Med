@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "go-to-go-med",
+    "name": "Go-To-Go Med!",
     "slug": "go-to-go-med",
     "version": "1.0.2",
     "orientation": "portrait",
@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "name": "GoToGo Med",
       "supportsTablet": true,
       "infoPlist": {
         "NSFaceIDUsageDescription": "Deze app gebruikt Face ID om toegang te beveiligen tot je medicatiegegevens.",
