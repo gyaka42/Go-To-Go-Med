@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
 
 const MEDICATIONS_KEY = "@medications";
 const DOSE_HISTORY_KEY = "@dose_history";
@@ -161,6 +162,7 @@ export async function recordDose(
 
 export async function clearAllData(): Promise<void> {
   try {
+    await Notifications.cancelAllScheduledNotificationsAsync();
     await AsyncStorage.multiRemove([MEDICATIONS_KEY, DOSE_HISTORY_KEY]);
   } catch (error) {
     console.error("Error clearing data:", error);
