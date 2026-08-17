@@ -1,7 +1,7 @@
 {
   "name": "go-to-go-med",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
