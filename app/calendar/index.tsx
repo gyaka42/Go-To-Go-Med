@@ -32,6 +32,7 @@ export default function CalendarScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [medications, setMedications] = useState<Medication[]>([]);
   const [doseHistory, setDoseHistory] = useState<DoseHistory[]>([]);
+  const [savingDoseKey, setSavingDoseKey] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -80,10 +81,17 @@ export default function CalendarScreen() {
         day
       );
       const isToday = new Date().toDateString() === date.toDateString();
-      const hasDoses = doseHistory.some(
-        (dose) =>
-          new Date(dose.timestamp).toDateString() === date.toDateString()
-      );
+      const isSelected = selectedDate.toDateString() === date.toDateString();
+      const hasDoses =
+        medications.some(
+          (medication) =>
+            medication.times.length > 0 &&
+            isMedicationActiveOnDate(medication, date)
+        ) ||
+        doseHistory.some(
+          (dose) =>
+            new Date(dose.timestamp).toDateString() === date.toDateString()
+        );
 
       week.push(
         <TouchableOpacity
@@ -91,16 +99,38 @@ export default function CalendarScreen() {
           style={[
             styles.calendarDay,
             isToday && styles.today,
+            isSelected && styles.selectedDay,
             hasDoses && styles.hasEvents,
           ]}
           onPress={() => setSelectedDate(date)}
         >
-          <Text style={[styles.dayText, isToday && styles.todayText]}>
+          <Text
+            style={[
+              styles.dayText,
+              isToday && styles.todayText,
+              isSelected && styles.selectedDayText,
+            ]}
+          >
             {day}
           </Text>
-          {hasDoses && <View style={styles.eventDot} />}
+          {hasDoses && (
+            <View
+              style={[styles.eventDot, isSelected && styles.selectedEventDot]}
+            />
+          )}
         </TouchableOpacity>
       );
+
+      if (day === days) {
+        while (week.length < 7) {
+          week.push(
+            <View
+              key={`empty-end-${week.length}`}
+              style={styles.calendarDay}
+            />
+          );
+        }
+      }
 
       if ((firstDay + day) % 7 === 0 || day === days) {
         calendar.push(
@@ -130,6 +160,22 @@ export default function CalendarScreen() {
         ? med.times.map((t) => ({ medication: med, time: t }))
         : [{ medication: med, time: "" }]
     );
+    schedule.sort((a, b) => {
+      if (!a.time) return 1;
+      if (!b.time) return -1;
+      return a.time.localeCompare(b.time);
+    });
+
+    if (schedule.length === 0) {
+      return (
+        <View style={styles.emptySchedule}>
+          <Ionicons name="calendar-outline" size={32} color="#a0a0a0" />
+          <Text style={styles.emptyScheduleText}>
+            {i18n.t("noMedicationsToday")}
+          </Text>
+        </View>
+      );
+    }
 
     return schedule.map(({ medication, time }) => {
       const taken = dayDoses.some(
@@ -138,6 +184,7 @@ export default function CalendarScreen() {
           dose.scheduledTime === time &&
           dose.taken
       );
+      const doseKey = `${medication.id}-${time}`;
 
       return (
         <View key={`${medication.id}-${time}`} style={styles.medicationCard}>
@@ -164,31 +211,45 @@ export default function CalendarScreen() {
               style={[
                 styles.takeDoseButton,
                 { backgroundColor: medication.color },
+                savingDoseKey !== null && styles.takeDoseButtonDisabled,
               ]}
               onPress={async () => {
+                if (savingDoseKey) return;
                 if (!isMedicationDue(medication, selectedDate, time)) {
                   Alert.alert(i18n.t("error"), i18n.t("medicationTooEarly"));
                   return;
                 }
-                const recordedAt = new Date(selectedDate);
-                const now = new Date();
-                recordedAt.setHours(
-                  now.getHours(),
-                  now.getMinutes(),
-                  now.getSeconds(),
-                  0
-                );
-                const updatedMedication = await recordDose(
-                  medication.id,
-                  time,
-                  true,
-                  recordedAt.toISOString()
-                );
-                if (updatedMedication?.refillReminder) {
-                  await scheduleRefillReminder(updatedMedication);
+                try {
+                  setSavingDoseKey(doseKey);
+                  const recordedAt = new Date(selectedDate);
+                  const now = new Date();
+                  recordedAt.setHours(
+                    now.getHours(),
+                    now.getMinutes(),
+                    now.getSeconds(),
+                    0
+                  );
+                  const updatedMedication = await recordDose(
+                    medication.id,
+                    time,
+                    true,
+                    recordedAt.toISOString()
+                  );
+                  if (updatedMedication?.refillReminder) {
+                    await scheduleRefillReminder(updatedMedication);
+                  }
+                  await loadData();
+                } catch (error) {
+                  console.error("Error recording calendar dose:", error);
+                  Alert.alert(
+                    i18n.t("error"),
+                    i18n.t("failedToSaveMedication")
+                  );
+                } finally {
+                  setSavingDoseKey(null);
                 }
-                loadData();
               }}
+              disabled={savingDoseKey !== null}
             >
               <Text style={styles.takeDoseText}>{i18n.t("take")}</Text>
             </TouchableOpacity>
@@ -378,6 +439,13 @@ const styles = StyleSheet.create({
     color: "#1a8e2d",
     fontWeight: "600",
   },
+  selectedDay: {
+    backgroundColor: "#168A7D",
+  },
+  selectedDayText: {
+    color: "white",
+    fontWeight: "700",
+  },
   hasEvents: {
     position: "relative",
   },
@@ -388,6 +456,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#1a8e2d",
     position: "absolute",
     bottom: "15%",
+  },
+  selectedEventDot: {
+    backgroundColor: "white",
   },
   scheduleContainer: {
     flex: 1,
@@ -406,6 +477,17 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#333",
     marginBottom: 15,
+  },
+  emptySchedule: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 28,
+  },
+  emptyScheduleText: {
+    color: "#777",
+    fontSize: 15,
+    marginTop: 8,
+    textAlign: "center",
   },
   medicationCard: {
     flexDirection: "row",
@@ -450,6 +532,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 12,
+  },
+  takeDoseButtonDisabled: {
+    opacity: 0.55,
   },
   takeDoseText: {
     color: "white",

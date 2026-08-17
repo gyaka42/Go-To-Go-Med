@@ -307,6 +307,9 @@ export default function AddMedicationScreen() {
           style={styles.formContainer}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.formContentContainer}
+          contentInsetAdjustmentBehavior="never"
+          automaticallyAdjustKeyboardInsets
+          keyboardShouldPersistTaps="handled"
         >
           {/* Basic Information */}
           <View style={styles.section}>
@@ -385,7 +388,7 @@ export default function AddMedicationScreen() {
               />
             )}
 
-            {form.frequency && form.frequency !== "As needed" && (
+            {form.frequency && form.times.length > 0 && (
               <View style={styles.timesContainer}>
                 <Text style={styles.timesTitle}>
                   {i18n.t("medicationTimes")}
@@ -650,9 +653,14 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 1,
+    backgroundColor: "#f8f9fa",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
   formContentContainer: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 32,
   },
   section: {
     marginBottom: 25,
@@ -845,6 +853,11 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 4,
   },
   saveButton: {
     borderRadius: 16,

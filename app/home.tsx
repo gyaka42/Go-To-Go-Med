@@ -141,6 +141,7 @@ export default function HomeScreen() {
   >([]);
   const [completedDoses, setCompletedDoses] = useState(0);
   const [doseHistory, setDoseHistory] = useState<DoseHistory[]>([]);
+  const [savingDoseKey, setSavingDoseKey] = useState<string | null>(null);
 
   const loadMedications = useCallback(async () => {
     try {
@@ -239,12 +240,16 @@ export default function HomeScreen() {
   );
 
   const handleTakeDose = async (medication: Medication, time: string) => {
+    const doseKey = `${medication.id}-${time}`;
+    if (savingDoseKey) return;
+
     if (!isMedicationDue(medication, new Date(), time)) {
       Alert.alert(i18n.t("error"), i18n.t("medicationTooEarly"));
       return;
     }
 
     try {
+      setSavingDoseKey(doseKey);
       const updatedMedication = await recordDose(
         medication.id,
         time,
@@ -258,6 +263,8 @@ export default function HomeScreen() {
     } catch (error) {
       console.error("Error recording dose:", error);
       Alert.alert(i18n.t("error"), i18n.t("failedToSaveMedication"));
+    } finally {
+      setSavingDoseKey(null);
     }
   };
 
@@ -396,6 +403,7 @@ export default function HomeScreen() {
                         { backgroundColor: medication.color },
                       ]}
                       onPress={() => handleTakeDose(medication, time)}
+                      disabled={savingDoseKey !== null}
                     >
                       <Text style={styles.takeDoseText}>{i18n.t("take")}</Text>
                     </TouchableOpacity>

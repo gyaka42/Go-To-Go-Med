@@ -3,6 +3,7 @@ import * as Notifications from "expo-notifications";
 
 const MEDICATIONS_KEY = "@medications";
 const DOSE_HISTORY_KEY = "@dose_history";
+let doseWriteQueue: Promise<void> = Promise.resolve();
 
 export interface Medication {
   id: string;
@@ -111,7 +112,24 @@ export async function getTodaysDoses(): Promise<DoseHistory[]> {
   }
 }
 
-export async function recordDose(
+export function recordDose(
+  medicationId: string,
+  scheduledTime: string,
+  taken: boolean,
+  timestamp: string
+): Promise<Medication | null> {
+  const operation = doseWriteQueue.then(
+    () => recordDoseInternal(medicationId, scheduledTime, taken, timestamp),
+    () => recordDoseInternal(medicationId, scheduledTime, taken, timestamp)
+  );
+  doseWriteQueue = operation.then(
+    () => undefined,
+    () => undefined
+  );
+  return operation;
+}
+
+async function recordDoseInternal(
   medicationId: string,
   scheduledTime: string,
   taken: boolean,
