@@ -7,7 +7,8 @@ import { Medication } from "./storage";
  */
 export function isMedicationDue(
   medication: Medication,
-  date: Date = new Date()
+  date: Date = new Date(),
+  scheduledTime?: string
 ): boolean {
   const now = new Date();
 
@@ -29,8 +30,10 @@ export function isMedicationDue(
     return true;
   }
 
-  // Same day: check if any scheduled time has passed
-  return medication.times.some((t) => {
+  // Same day: only check the dose the user is trying to take. Previously an
+  // earlier dose made every later dose appear due as well.
+  const times = scheduledTime ? [scheduledTime] : medication.times;
+  return times.some((t) => {
     const [h, m] = t.split(":").map(Number);
     const due = new Date(selectedDate);
     due.setHours(h, m, 0, 0);
@@ -52,7 +55,8 @@ export function isMedicationActiveOnDate(
 
   const check = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-  const durationDays = parseInt(medication.duration.split(" ")[0]);
+  const durationDays =
+    medication.durationDays ?? parseInt(medication.duration.split(" ")[0]);
 
   // Non-numeric durations are considered ongoing (-1)
   if (isNaN(durationDays) || durationDays === -1) {

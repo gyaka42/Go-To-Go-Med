@@ -11,6 +11,7 @@ export interface Medication {
   times: string[];
   startDate: string;
   duration: string;
+  durationDays?: number;
   color: string;
   reminderEnabled: boolean;
   currentSupply: number;
@@ -31,7 +32,9 @@ export interface DoseHistory {
 export async function getMedications(): Promise<Medication[]> {
   try {
     const data = await AsyncStorage.getItem(MEDICATIONS_KEY);
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+    const parsed: unknown = JSON.parse(data);
+    return Array.isArray(parsed) ? parsed : [];
   } catch (error) {
     console.error("Error getting medications:", error);
     return [];
@@ -60,6 +63,8 @@ export async function updateMedication(
     if (index !== -1) {
       medications[index] = updatedMedication;
       await AsyncStorage.setItem(MEDICATIONS_KEY, JSON.stringify(medications));
+    } else {
+      throw new Error(`Medication ${updatedMedication.id} was not found`);
     }
   } catch (error) {
     console.error("Error updating medication:", error);
@@ -84,7 +89,9 @@ export async function deleteMedication(id: string): Promise<void> {
 export async function getDoseHistory(): Promise<DoseHistory[]> {
   try {
     const data = await AsyncStorage.getItem(DOSE_HISTORY_KEY);
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+    const parsed: unknown = JSON.parse(data);
+    return Array.isArray(parsed) ? parsed : [];
   } catch (error) {
     console.error("Error getting dose history:", error);
     return [];
@@ -109,7 +116,7 @@ export async function recordDose(
   scheduledTime: string,
   taken: boolean,
   timestamp: string
-): Promise<void> {
+): Promise<Medication | null> {
   try {
     const history = await getDoseHistory();
     const existingIndex = history.findIndex(
@@ -130,7 +137,7 @@ export async function recordDose(
       };
     } else {
       history.push({
-        id: Math.random().toString(36).substr(2, 9),
+        id: createId(),
         medicationId,
         scheduledTime,
         timestamp,
@@ -150,10 +157,15 @@ export async function recordDose(
       const medications = await getMedications();
       const medication = medications.find((med) => med.id === medicationId);
       if (medication && medication.currentSupply > 0) {
+        const crossedRefillThreshold =
+          medication.currentSupply > medication.refillAt &&
+          medication.currentSupply - 1 <= medication.refillAt;
         medication.currentSupply -= 1;
         await updateMedication(medication);
+        return crossedRefillThreshold ? medication : null;
       }
     }
+    return null;
   } catch (error) {
     console.error("Error recording dose:", error);
     throw error;
@@ -187,7 +199,8 @@ export async function syncMissedDoses(): Promise<void> {
     const start = new Date(medication.startDate);
     start.setHours(0, 0, 0, 0);
 
-    const durationDays = parseInt(medication.duration.split(" ")[0]);
+    const durationDays =
+      medication.durationDays ?? parseInt(medication.duration.split(" ")[0]);
     const totalDays =
       isNaN(durationDays) || durationDays === -1
         ? Math.floor((now.getTime() - start.getTime()) / 86400000) + 1
@@ -220,7 +233,7 @@ export async function syncMissedDoses(): Promise<void> {
 
         if (!exists) {
           history.push({
-            id: Math.random().toString(36).substr(2, 9),
+            id: createId(),
             medicationId: medication.id,
             scheduledTime: time,
             timestamp: scheduled.toISOString(),
@@ -239,4 +252,8 @@ export async function syncMissedDoses(): Promise<void> {
     );
     await AsyncStorage.setItem(DOSE_HISTORY_KEY, JSON.stringify(history));
   }
+}
+
+export function createId(): string {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
 }

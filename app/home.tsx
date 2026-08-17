@@ -28,6 +28,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import {
   registerForPushNotificationsAsync,
   scheduleMedicationReminder,
+  scheduleRefillReminder,
   setAppBadgeCount,
 } from "../utils/notifications";
 
@@ -171,7 +172,14 @@ export default function HomeScreen() {
       setTodaysSchedule(schedule);
 
       // Calculate completed doses
-      const completed = todaysDoses.filter((dose) => dose.taken).length;
+      const completed = schedule.filter(({ medication, time }) =>
+        todaysDoses.some(
+          (dose) =>
+            dose.medicationId === medication.id &&
+            dose.scheduledTime === time &&
+            dose.taken
+        )
+      ).length;
       setCompletedDoses(completed);
 
       const remaining = schedule.length - completed;
@@ -231,13 +239,21 @@ export default function HomeScreen() {
   );
 
   const handleTakeDose = async (medication: Medication, time: string) => {
-    if (!isMedicationDue(medication)) {
+    if (!isMedicationDue(medication, new Date(), time)) {
       Alert.alert(i18n.t("error"), i18n.t("medicationTooEarly"));
       return;
     }
 
     try {
-      await recordDose(medication.id, time, true, new Date().toISOString());
+      const updatedMedication = await recordDose(
+        medication.id,
+        time,
+        true,
+        new Date().toISOString()
+      );
+      if (updatedMedication?.refillReminder) {
+        await scheduleRefillReminder(updatedMedication);
+      }
       await loadMedications(); // Reload data after recording dose
     } catch (error) {
       console.error("Error recording dose:", error);

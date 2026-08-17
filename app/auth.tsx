@@ -37,17 +37,13 @@ export default function AuthScreen() {
 
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
-      const supportedTypes =
-        await LocalAuthentication.supportedAuthenticationTypesAsync();
-
-      // handle supportedtypes
       const auth = await LocalAuthentication.authenticateAsync({
         promptMessage:
-          hasHardware && isEnrolled //hasBiometrics
-            ? "Gebruik Face ID of Touch ID"
-            : "Voer je PIN in om toegang te krijgen tot MedRemind",
-        fallbackLabel: "Gebruik PIN",
-        cancelLabel: "Annuleren",
+          hasHardware && isEnrolled
+            ? i18n.t("biometricsPrompt")
+            : i18n.t("pinPrompt"),
+        fallbackLabel: i18n.t("enterPin"),
+        cancelLabel: i18n.t("cancel"),
         disableDeviceFallback: false,
       });
 
@@ -56,7 +52,12 @@ export default function AuthScreen() {
       } else {
         setError("Authentication failed. Please try again.");
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("Authentication error:", error);
+      setError("Authentication failed. Please try again.");
+    } finally {
+      setIsAuthenticating(false);
+    }
   };
 
   return (

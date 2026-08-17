@@ -18,7 +18,6 @@ import {
   Medication,
   updateMedication,
 } from "../../utils/storage";
-import { scheduleRefillReminder } from "../../utils/notifications";
 
 export default function RefillTrackerScreen() {
   const router = useRouter();
@@ -64,8 +63,10 @@ export default function RefillTrackerScreen() {
 
   const getSupplyStatus = (medication: Medication) => {
     const percentage =
-      (medication.currentSupply / medication.totalSupply) * 100;
-    if (percentage <= medication.refillAt) {
+      medication.totalSupply > 0
+        ? (medication.currentSupply / medication.totalSupply) * 100
+        : 0;
+    if (medication.currentSupply <= medication.refillAt) {
       return {
         status: i18n.t("low"),
         color: "#F44336",
@@ -129,7 +130,16 @@ export default function RefillTrackerScreen() {
             medications.map((medication) => {
               const supplyStatus = getSupplyStatus(medication);
               const supplyPercentage =
-                (medication.currentSupply / medication.totalSupply) * 100;
+                medication.totalSupply > 0
+                  ? Math.max(
+                      0,
+                      Math.min(
+                        100,
+                        (medication.currentSupply / medication.totalSupply) *
+                          100
+                      )
+                    )
+                  : 0;
 
               return (
                 <View key={medication.id} style={styles.medicationCard}>
@@ -192,7 +202,8 @@ export default function RefillTrackerScreen() {
                     </View>
                     <View style={styles.refillInfo}>
                       <Text style={styles.refillLabel}>
-                        {i18n.t("refillAt")}: {medication.refillAt}%
+                        {i18n.t("refillAt")}: {medication.refillAt}{" "}
+                        {i18n.t("units")}
                       </Text>
                       {medication.lastRefillDate && (
                         <Text style={styles.lastRefillDate}>

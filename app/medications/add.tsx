@@ -15,7 +15,7 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { LinearGradient } from "expo-linear-gradient";
-import { addMedication } from "../../utils/storage";
+import { addMedication, createId } from "../../utils/storage";
 import {
   scheduleMedicationReminder,
   scheduleRefillReminder,
@@ -109,13 +109,23 @@ export default function AddMedicationScreen() {
     }
 
     if (form.refillReminder) {
-      if (!form.currentSupply) {
+      const currentSupply = Number(form.currentSupply);
+      const refillAt = Number(form.refillAt);
+      if (
+        !form.currentSupply ||
+        !Number.isInteger(currentSupply) ||
+        currentSupply <= 0
+      ) {
         newErrors.currentSupply = i18n.t("currentSupplyRequired");
       }
-      if (!form.refillAt) {
+      if (!form.refillAt || !Number.isInteger(refillAt) || refillAt < 0) {
         newErrors.refillAt = i18n.t("refillAlertRequired");
       }
-      if (Number(form.refillAt) >= Number(form.currentSupply)) {
+      if (
+        Number.isFinite(refillAt) &&
+        Number.isFinite(currentSupply) &&
+        refillAt >= currentSupply
+      ) {
         newErrors.refillAt = i18n.t("refillAlertLessThanSupply");
       }
     }
@@ -139,12 +149,15 @@ export default function AddMedicationScreen() {
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
       const medicationData = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: createId(),
         ...form,
         currentSupply: form.currentSupply ? Number(form.currentSupply) : 0,
         totalSupply: form.currentSupply ? Number(form.currentSupply) : 0,
         refillAt: form.refillAt ? Number(form.refillAt) : 0,
         startDate: form.startDate.toISOString(),
+        durationDays:
+          DURATIONS.find((duration) => duration.label === form.duration)
+            ?.value ?? -1,
         color: randomColor,
       };
 

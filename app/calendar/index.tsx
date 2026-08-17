@@ -20,6 +20,7 @@ import {
   DoseHistory,
 } from "../../utils/storage";
 import { isMedicationDue, isMedicationActiveOnDate } from "../../utils/time";
+import { scheduleRefillReminder } from "../../utils/notifications";
 import { useFocusEffect } from "@react-navigation/native";
 
 const WEEKDAYS = Array.from({ length: 7 }, (_, i) =>
@@ -165,16 +166,27 @@ export default function CalendarScreen() {
                 { backgroundColor: medication.color },
               ]}
               onPress={async () => {
-                if (!isMedicationDue(medication, selectedDate)) {
+                if (!isMedicationDue(medication, selectedDate, time)) {
                   Alert.alert(i18n.t("error"), i18n.t("medicationTooEarly"));
                   return;
                 }
-                await recordDose(
+                const recordedAt = new Date(selectedDate);
+                const now = new Date();
+                recordedAt.setHours(
+                  now.getHours(),
+                  now.getMinutes(),
+                  now.getSeconds(),
+                  0
+                );
+                const updatedMedication = await recordDose(
                   medication.id,
                   time,
                   true,
-                  new Date().toISOString()
+                  recordedAt.toISOString()
                 );
+                if (updatedMedication?.refillReminder) {
+                  await scheduleRefillReminder(updatedMedication);
+                }
                 loadData();
               }}
             >
